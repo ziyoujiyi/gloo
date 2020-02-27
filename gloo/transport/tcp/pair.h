@@ -209,6 +209,8 @@ class Pair : public ::gloo::transport::Pair, public Handler {
     return timeout_;
   }
 
+  std::exception_ptr signalTimeoutExceptionExternal(const std::string& msg);
+
   std::exception_ptr signalExceptionExternal(const std::string& msg);
 
   friend class Buffer;

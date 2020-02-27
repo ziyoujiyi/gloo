@@ -23,6 +23,14 @@ class Pair {
 
   virtual const Address& address() const = 0;
 
+  virtual void setSelfRank(int self_rank) {
+    _self_rank = self_rank;
+  }
+
+  virtual void setPairRank(int pair_rank) {
+    _pair_rank = pair_rank;
+  }
+
   virtual void connect(const std::vector<char>& bytes) = 0;
 
   virtual void close() = 0;
@@ -48,6 +56,9 @@ class Pair {
       uint64_t tag,
       size_t offset = 0,
       size_t nbytes = 0) = 0;
+
+  int _pair_rank = 0;
+  int _self_rank = 0;
 };
 
 } // namespace transport

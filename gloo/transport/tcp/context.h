@@ -83,6 +83,8 @@ class Context final : public ::gloo::transport::Context,
   // out. All pairs should be signaled and closed in that event.
   void signalException(const std::string& msg);
 
+  void signalTimeoutException(const std::string& msg);
+
   friend class ContextMutator;
 
   friend class UnboundBuffer;

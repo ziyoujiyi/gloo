@@ -361,7 +361,12 @@ bool Pair::write(Op& op) {
       if (errno == EAGAIN) {
         if (sync_) {
           // Sync mode: blocking call returning with EAGAIN indicates timeout.
-          signalException(GLOO_ERROR_MSG("Write timeout ", peer_.str()));
+          // signalException(GLOO_ERROR_MSG("Write timeout ", peer_.str()));
+          std::string err = GLOO_ERROR_MSG(
+              "TIMEOUT self_rank = ", std::to_string(_self_rank),
+              " pair_rank = ", std::to_string(_pair_rank),
+              " peer_str = ", peer_.str());
+          signalException(std::make_exception_ptr(::gloo::TimeoutException(err)));
         } else {
           // Async mode: can't write more than this.
         }
@@ -548,7 +553,12 @@ bool Pair::read() {
             } else {
               // Either timeout on poll or blocking call returning with EAGAIN
               // indicates timeout
-              signalException(GLOO_ERROR_MSG("Read timeout ", peer_.str()));
+              // signalException(GLOO_ERROR_MSG("Read timeout ", peer_.str()));
+              std::string err = GLOO_ERROR_MSG(
+                   "TIMEOUT self_rank = ", std::to_string(_self_rank),
+                   " pair_rank = ", std::to_string(_pair_rank),
+                   " peer_str = ", peer_.str());
+              signalException(std::make_exception_ptr(::gloo::TimeoutException(err)));
             }
           } else {
             // Async mode: can't read more than this.
@@ -895,7 +905,12 @@ void Pair::waitUntilConnected(
     // Use a longer timeout when waiting for initial connect
     auto done = cv_.wait_for(lock, timeout_ * 5, pred);
     if (!done) {
-      signalAndThrowException(GLOO_ERROR_MSG("Connect timeout ", peer_.str()));
+      // signalAndThrowException(GLOO_ERROR_MSG("Connect timeout ", peer_.str()));
+      std::string err = GLOO_ERROR_MSG(
+          "TIMEOUT self_rank = ", std::to_string(_self_rank),
+          " pair_rank = ", std::to_string(_pair_rank),
+          " peer_str = ", peer_.str());
+      signalAndThrowException(std::make_exception_ptr(::gloo::TimeoutException(err)));
     }
   } else {
     cv_.wait(lock, pred);
@@ -1144,6 +1159,13 @@ void Pair::throwIfException() {
   if (ex_ != nullptr) {
     std::rethrow_exception(ex_);
   }
+}
+
+std::exception_ptr Pair::signalTimeoutExceptionExternal(const std::string& msg) {
+  if (ex_ == nullptr) {
+    signalException(std::make_exception_ptr(::gloo::TimeoutException(msg)));
+  }
+  return ex_;
 }
 
 std::exception_ptr Pair::signalExceptionExternal(const std::string& msg) {

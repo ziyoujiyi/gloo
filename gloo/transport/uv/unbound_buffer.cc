@@ -61,7 +61,7 @@ bool UnboundBuffer::waitRecv(int* rank, std::chrono::milliseconds timeout) {
     auto done = recvCv_.wait_for(
         lock, timeout, [&] { return abortWaitRecv_ || recvCompletions_ > 0; });
     if (!done) {
-      throw ::gloo::IoException(GLOO_ERROR_MSG(
+      throw ::gloo::TimeoutException(GLOO_ERROR_MSG(
           "Timed out waiting ",
           timeout.count(),
           "ms for recv operation to complete"));
