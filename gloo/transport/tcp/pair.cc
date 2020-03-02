@@ -581,8 +581,13 @@ bool Pair::read() {
 
     // Transition to CLOSED on EOF
     if (rv == 0) {
-      signalException(
-          GLOO_ERROR_MSG("Connection closed by peer ", peer_.str()));
+      std::string err = GLOO_ERROR_MSG(
+          "TIMEOUT self_rank = ", std::to_string(_self_rank),
+          " pair_rank = ", std::to_string(_pair_rank),
+          " peer_str = ", peer_.str());
+      signalException(std::make_exception_ptr(::gloo::TimeoutException(err)));
+      //signalException(
+      //    GLOO_ERROR_MSG("Connection closed by peer ", peer_.str()));
       return false;
     }
 
