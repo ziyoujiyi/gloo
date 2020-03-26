@@ -5,6 +5,7 @@ set(GLOO_RENDEZVOUS_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/prefix_store.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/store.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/context.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/http_store.cc"
   )
 
 set(GLOO_RENDEZVOUS_HDRS
@@ -13,6 +14,7 @@ set(GLOO_RENDEZVOUS_HDRS
   "${CMAKE_CURRENT_SOURCE_DIR}/prefix_store.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/store.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/context.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/http_store.h"
   )
 
 if(USE_REDIS)

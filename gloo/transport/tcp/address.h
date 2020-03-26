@@ -61,7 +61,8 @@ class Address : public ::gloo::transport::Address {
     sequence_number_t seq{kSequenceNumberUnset};
   };
 
-  static_assert(std::is_trivially_copyable<Impl>::value, "!");
+  //static_assert(std::is_trivially_copyable<Impl>::value, "!");
+  static_assert(__has_trivial_copy(Impl), "!");
   static_assert(sizeof(Impl) <= kMaxByteSize, "!");
 
   Impl impl_;
