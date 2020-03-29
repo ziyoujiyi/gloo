@@ -42,13 +42,13 @@ std::vector<char> HTTPStore::get(const std::string& key) {
 }
 
 void HTTPStore::wait(const std::vector<std::string>& keys,
-                     const std::chrono::milliseconds& timeout) {
+                     const std::chrono::milliseconds&) {
   const auto start = std::chrono::steady_clock::now();
 
   while (!CheckKeys(keys)) {
     const auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
         std::chrono::steady_clock::now() - start);
-    if (timeout != gloo::kNoTimeout && elapsed > timeout) {
+    if (wait_timeout_ != gloo::kNoTimeout && elapsed > wait_timeout_) {
       GLOO_THROW_IO_EXCEPTION(GLOO_ERROR_MSG("Wait timeout for key(s): ",
                                              ::gloo::MakeString(keys)));
     }
@@ -76,12 +76,12 @@ HTTPStore::PerformHTTP(http::Request& request,
     try {
       http::Response response = request.send(method, body);
       if (response.status != HTTP_OK && response.status != HTTP_NOT_FOUND) {
-        LOG(WARNING) << "HTTP response not OK, got " << response.status;
+        GLOO_LOG(WARNING) << "HTTP response not OK, got " << response.status;
       } else {
         return response;
       }
     } catch (std::exception& e) {
-      LOG(DEBUG) << "Exception: " << e.what();
+      GLOO_LOG(DEBUG) << "Exception: " << e.what();
     }
 
     // sleep for 500ms before another try.
@@ -89,14 +89,14 @@ HTTPStore::PerformHTTP(http::Request& request,
         std::chrono::milliseconds(RETRY_WAITING_TIME_MILLSEC));
   }
 
-  LOG(ERROR) << "HTTP GET request failed too many times, aborting. See "
-                "exception message above.";
+  GLOO_LOG(ERROR) << "HTTP GET request failed too many times, aborting. See "
+                     "exception message above.";
   throw std::runtime_error("HTTP request failed.");
 }
 
 bool HTTPStore::HTTP_GET(const std::string& key, std::vector<char>& result) {
   std::string url = url_prefix_ + key;
-  LOG(TRACE) << "Send GET request to " << url;
+  GLOO_LOG(TRACE) << "Send GET request to " << url;
   http::Request request(url);
 
   http::Response response = PerformHTTP(request, HTTP_GET_METHOD);
@@ -114,7 +114,7 @@ bool HTTPStore::HTTP_GET(const std::string& key, std::vector<char>& result) {
 void HTTPStore::HTTP_PUT(const std::string& key,
                          const std::vector<char>& data) {
   std::string url = url_prefix_ + key;
-  LOG(TRACE) << "Send PUT request to " << url;
+  GLOO_LOG(TRACE) << "Send PUT request to " << url;
   http::Request request(url);
 
   std::string body;
@@ -125,7 +125,7 @@ void HTTPStore::HTTP_PUT(const std::string& key,
 
 void HTTPStore::HTTP_DELETE(const std::string& key) {
   std::string url = url_prefix_ + key;
-  LOG(TRACE) << "Send GET request to " << url;
+  GLOO_LOG(TRACE) << "Send GET request to " << url;
   http::Request request(url);
   PerformHTTP(request, HTTP_DELETE_METHOD);
 }

@@ -6,11 +6,11 @@
 
 namespace gloo {
 
-LogMessage::LogMessage(const char* fname, int line, LogLevel severity)
+GlooLogMessage::GlooLogMessage(const char* fname, int line, GlooLogLevel severity)
     : fname_(fname), line_(line), severity_(severity) {}
 
-void LogMessage::GenerateLogMessage(bool log_time) {
-  bool use_cout = static_cast<int>(severity_) <= static_cast<int>(LogLevel::INFO);
+void GlooLogMessage::GenerateLogMessage(bool log_time) {
+  bool use_cout = static_cast<int>(severity_) <= static_cast<int>(GlooLogLevel::INFO);
   std::ostream& os = use_cout ? std::cout : std::cerr;
   if (log_time) {
     auto now = std::chrono::system_clock::now();
@@ -25,62 +25,62 @@ void LogMessage::GenerateLogMessage(bool log_time) {
     strftime(time_buffer, time_buffer_size, "%Y-%m-%d %H:%M:%S",
              localtime(&as_time_t));
     os << "[" << time_buffer << "." << std::setw(6) << micros_remainder.count() 
-              << ": " << LOG_LEVELS[static_cast<int>(severity_)] << " " 
+              << ": " << GLOO_LOG_LEVELS[static_cast<int>(severity_)] << " " 
               << fname_ << ":" << line_ << "] " << str() << std::endl;
   } else {
-    os << "[" << LOG_LEVELS[static_cast<int>(severity_)] << " " 
+    os << "[" << GLOO_LOG_LEVELS[static_cast<int>(severity_)] << " " 
               << fname_ << ":" << line_ << "] " << str() << std::endl;
   }
 }
 
-LogMessage::~LogMessage() {
-  static LogLevel min_log_level = MinLogLevelFromEnv();
-  static bool log_time = LogTimeFromEnv();
+GlooLogMessage::~GlooLogMessage() {
+  static GlooLogLevel min_log_level = GlooMinLogLevelFromEnv();
+  static bool log_time = GlooLogTimeFromEnv();
   if (severity_ >= min_log_level) {
     GenerateLogMessage(log_time);
   }
 }
 
-LogMessageFatal::LogMessageFatal(const char* file, int line)
-    : LogMessage(file, line, LogLevel::FATAL) {}
+GlooLogMessageFatal::GlooLogMessageFatal(const char* file, int line)
+    : GlooLogMessage(file, line, GlooLogLevel::FATAL) {}
 
-LogMessageFatal::~LogMessageFatal() {
-  static bool log_time = LogTimeFromEnv();
+GlooLogMessageFatal::~GlooLogMessageFatal() {
+  static bool log_time = GlooLogTimeFromEnv();
   GenerateLogMessage(log_time);
   abort();
 }
 
-LogLevel ParseLogLevelStr(const char* env_var_val) {
+GlooLogLevel ParseLogLevelStr(const char* env_var_val) {
   std::string min_log_level(env_var_val);
   std::transform(min_log_level.begin(), min_log_level.end(), min_log_level.begin(), ::tolower);
   if (min_log_level == "trace") {
-    return LogLevel::TRACE;
+    return GlooLogLevel::TRACE;
   } else if (min_log_level == "debug") {
-    return LogLevel::DEBUG;
+    return GlooLogLevel::DEBUG;
   } else if (min_log_level == "info") {
-    return LogLevel::INFO;
+    return GlooLogLevel::INFO;
   } else if (min_log_level == "warning") {
-    return LogLevel::WARNING;
+    return GlooLogLevel::WARNING;
   } else if (min_log_level == "error") {
-    return LogLevel::ERROR;
+    return GlooLogLevel::ERROR;
   } else if (min_log_level == "fatal") {
-    return LogLevel::FATAL;
+    return GlooLogLevel::FATAL;
   } else {
-    return LogLevel::WARNING;
+    return GlooLogLevel::WARNING;
   }
 }
 
-LogLevel MinLogLevelFromEnv() {
-  const char* env_var_val = getenv("HOROVOD_LOG_LEVEL");
+GlooLogLevel GlooMinLogLevelFromEnv() {
+  const char* env_var_val = getenv("GLOO_LOG_LEVEL");
   if (env_var_val == nullptr) {
     // default to WARNING
-    return LogLevel::WARNING;
+    return GlooLogLevel::WARNING;
   }
   return ParseLogLevelStr(env_var_val);
 }
 
-bool LogTimeFromEnv() {
-  const char* env_var_val = getenv("HOROVOD_LOG_HIDE_TIME");
+bool GlooLogTimeFromEnv() {
+  const char* env_var_val = getenv("GLOO_LOG_HIDE_TIME");
   if (env_var_val != nullptr &&
       std::strtol(env_var_val, nullptr, 10) > 0) {
     return false;

@@ -6,16 +6,16 @@
 
 namespace gloo {
 
-enum class LogLevel {
+enum class GlooLogLevel {
   TRACE, DEBUG, INFO, WARNING, ERROR, FATAL
 };
 
-#define LOG_LEVELS "TDIWEF"
+#define GLOO_LOG_LEVELS "TDIWEF"
 
-class LogMessage : public std::basic_ostringstream<char> {
+class GlooLogMessage : public std::basic_ostringstream<char> {
  public:
-  LogMessage(const char* fname, int line, LogLevel severity);
-  ~LogMessage();
+  GlooLogMessage(const char* fname, int line, GlooLogLevel severity);
+  ~GlooLogMessage();
 
  protected:
   void GenerateLogMessage(bool log_time);
@@ -23,39 +23,39 @@ class LogMessage : public std::basic_ostringstream<char> {
  private:
   const char* fname_;
   int line_;
-  LogLevel severity_;
+  GlooLogLevel severity_;
 };
 
 // LogMessageFatal ensures the process will exit in failure after
 // logging this message.
-class LogMessageFatal : public LogMessage {
+class GlooLogMessageFatal : public GlooLogMessage {
  public:
-  LogMessageFatal(const char* file, int line);
-  ~LogMessageFatal();
+  GlooLogMessageFatal(const char* file, int line);
+  ~GlooLogMessageFatal();
 };
 
-#define _HVD_LOG_TRACE \
-  LogMessage(__FILE__, __LINE__, LogLevel::TRACE)
-#define _HVD_LOG_DEBUG \
-  LogMessage(__FILE__, __LINE__, LogLevel::DEBUG)
-#define _HVD_LOG_INFO \
-  LogMessage(__FILE__, __LINE__, LogLevel::INFO)
-#define _HVD_LOG_WARNING \
-  LogMessage(__FILE__, __LINE__, LogLevel::WARNING)
-#define _HVD_LOG_ERROR \
-  LogMessage(__FILE__, __LINE__, LogLevel::ERROR)
-#define _HVD_LOG_FATAL \
-  LogMessageFatal(__FILE__, __LINE__)
+#define GLOO_HVD_LOG_TRACE \
+  GlooLogMessage(__FILE__, __LINE__, GlooLogLevel::TRACE)
+#define GLOO_HVD_LOG_DEBUG \
+  GlooLogMessage(__FILE__, __LINE__, GlooLogLevel::DEBUG)
+#define GLOO_HVD_LOG_INFO \
+  GlooLogMessage(__FILE__, __LINE__, GlooLogLevel::INFO)
+#define GLOO_HVD_LOG_WARNING \
+  GlooLogMessage(__FILE__, __LINE__, GlooLogLevel::WARNING)
+#define GLOO_HVD_LOG_ERROR \
+  GlooLogMessage(__FILE__, __LINE__, GlooLogLevel::ERROR)
+#define GLOO_HVD_LOG_FATAL \
+  GlooLogMessageFatal(__FILE__, __LINE__)
 
-#define _LOG(severity) _HVD_LOG_##severity
+#define _GLOO_LOG(severity) GLOO_HVD_LOG_##severity
 
-#define _LOG_RANK(severity, rank) _HVD_LOG_##severity << "[" << rank << "]: "
+#define GLOO_LOG_RANK(severity, rank) GLOO_HVD_LOG_##severity << "[" << rank << "]: "
 
-#define GET_LOG(_1, _2, NAME, ...) NAME
-#define LOG(...) GET_LOG(__VA_ARGS__, _LOG_RANK, _LOG)(__VA_ARGS__)
+#define GLOO_GET_LOG(_1, _2, NAME, ...) NAME
+#define GLOO_LOG(...) GLOO_GET_LOG(__VA_ARGS__, _GLOO_LOG_RANK, _GLOO_LOG)(__VA_ARGS__)
 
-LogLevel MinLogLevelFromEnv();
-bool LogTimeFromEnv();
+GlooLogLevel GlooMinLogLevelFromEnv();
+bool GlooLogTimeFromEnv();
 
 }
 

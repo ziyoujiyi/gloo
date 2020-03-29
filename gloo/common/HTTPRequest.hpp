@@ -390,7 +390,7 @@ namespace http
             if (scheme != "http")
                 throw RequestError("Only HTTP scheme is supported");
 
-            addrinfo hints = {};
+            addrinfo hints;// = {};
             hints.ai_family = getAddressFamily(internetProtocol);
             hints.ai_socktype = SOCK_STREAM;
 

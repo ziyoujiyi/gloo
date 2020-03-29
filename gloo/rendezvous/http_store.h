@@ -51,6 +51,10 @@ public:
   void wait(const std::vector<std::string>& keys,
             const std::chrono::milliseconds& timeout) override;
 
+  virtual void SetTimeoutSeconds(int timeout_seconds) {
+    wait_timeout_ = std::chrono::seconds(timeout_seconds);
+  }
+
   bool CheckKeys(const std::vector<std::string>& keys);
 
   void Finalize() override;
@@ -76,6 +80,7 @@ protected:
 
   std::string url_prefix_;
   int rank_;
+  std::chrono::seconds wait_timeout_ = std::chrono::seconds(9999999);
 };
 
 } // namespace common
