@@ -1,5 +1,6 @@
 set(GLOO_COMMON_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/logging.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/print_logging.cc"
   )
 
 set(GLOO_COMMON_HDRS
@@ -8,6 +9,9 @@ set(GLOO_COMMON_HDRS
   "${CMAKE_CURRENT_SOURCE_DIR}/error.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/logging.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/string.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/HTTPRequest.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/logging.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/print_logging.h"
   )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

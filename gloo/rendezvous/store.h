@@ -39,6 +39,8 @@ class Store {
     wait(keys);
   }
 
+  virtual void Finalize() {}
+
 };
 
 } // namespace rendezvous
