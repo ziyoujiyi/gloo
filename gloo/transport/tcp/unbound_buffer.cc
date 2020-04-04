@@ -75,13 +75,14 @@ bool UnboundBuffer::waitRecv(int* rank, std::chrono::milliseconds timeout) {
       // Note that the exception that they see indicates it was another
       // operation that timed out. This this exception surfaces anywhere,n
       // be sure to look for the actual cause (seen below).
-      context_->signalException("Application timeout caused pair closure");
+      context_->signalTimeoutException("Application timeout caused pair closure");
 
-      throw ::gloo::IoException(
-              GLOO_ERROR_MSG(
-                  "Timed out waiting ",
-                  timeout.count(),
-                  "ms for recv operation to complete"));
+      std::string err = GLOO_ERROR_MSG(
+          "TIMEOUT self_rank = none",
+          " pair_rank = ", recvRank_,
+          " peer_str = none");
+
+      throw ::gloo::TimeoutException(err);
     }
   }
   if (abortWaitRecv_) {
@@ -127,13 +128,14 @@ bool UnboundBuffer::waitSend(int* rank, std::chrono::milliseconds timeout) {
       // Note that the exception that they see indicates it was another
       // operation that timed out. This this exception surfaces anywhere,n
       // be sure to look for the actual cause (seen below).
-      context_->signalException("Application timeout caused pair closure");
+      context_->signalTimeoutException("Application timeout caused pair closure");
 
-      throw ::gloo::IoException(
-          GLOO_ERROR_MSG(
-              "Timed out waiting ",
-              timeout.count(),
-              "ms for send operation to complete"));
+    std::string err = GLOO_ERROR_MSG(
+        "TIMEOUT self_rank = ", sendRank_,
+        " pair_rank = none"
+        " peer_str = none");
+
+      throw ::gloo::TimeoutException(err);
     }
   }
 

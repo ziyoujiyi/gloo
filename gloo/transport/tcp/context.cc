@@ -152,6 +152,14 @@ void Context::signalException(const std::string& msg) {
   }
 }
 
+void Context::signalTimeoutException(const std::string& msg) {
+  for (auto& pair : pairs_) {
+    if (pair) {
+      reinterpret_cast<tcp::Pair*>(pair.get())->signalTimeoutExceptionExternal(msg);
+    }
+  }
+}
+
 } // namespace tcp
 } // namespace transport
 } // namespace gloo

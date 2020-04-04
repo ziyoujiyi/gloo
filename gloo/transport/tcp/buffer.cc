@@ -69,8 +69,11 @@ void Buffer::waitRecv() {
       if (!done) {
         // Release the mutex before calling into the pair to avoid deadlock.
         lock.unlock();
-        std::rethrow_exception(pair_->signalExceptionExternal(
-            GLOO_ERROR_MSG("Read timeout ", pair_->peer().str())));
+        std::string err = GLOO_ERROR_MSG(
+            "TIMEOUT self_rank = ", std::to_string(pair_->_self_rank),
+            " pair_rank = ", std::to_string(pair_->_pair_rank),
+            " peer_str = ", pair_->peer().str());
+        std::rethrow_exception(pair_->signalTimeoutExceptionExternal(err));
       }
     }
     recvCompletions_--;
@@ -110,8 +113,11 @@ void Buffer::waitSend() {
         if (!done) {
           // Release the mutex before calling into the pair to avoid deadlock.
           lock.unlock();
-          std::rethrow_exception(pair_->signalExceptionExternal(
-              GLOO_ERROR_MSG("Write timeout ", pair_->peer().str())));
+          std::string err = GLOO_ERROR_MSG(
+              "TIMEOUT self_rank = ", std::to_string(pair_->_self_rank),
+              " pair_rank = ", std::to_string(pair_->_pair_rank),
+              " peer_str = ", pair_->peer().str());
+          std::rethrow_exception(pair_->signalTimeoutExceptionExternal(err));
         }
       }
     }
