@@ -67,6 +67,9 @@ void Context::connectFullMesh(
     // Connect to other side of this pair
     auto allAddrs = store.get(key.str());
     auto addr = extractAddress(allAddrs, i);
+
+    transportContext->getPair(i)->setSelfRank(rank);
+    transportContext->getPair(i)->setPairRank(i);
     transportContext->getPair(i)->connect(addr);
   }
 

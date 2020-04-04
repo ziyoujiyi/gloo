@@ -50,4 +50,13 @@ struct IoException : public ::gloo::Exception {
 #define GLOO_THROW_IO_EXCEPTION(...) \
   throw ::gloo::IoException(GLOO_ERROR_MSG(__VA_ARGS__))
 
+struct TimeoutException : public ::gloo::Exception {
+  TimeoutException() = default;
+  explicit TimeoutException(const std::string& msg)
+      : ::gloo::Exception(msg) {}
+};
+
+#define GLOO_THROW_TIMEOUT_EXCEPTION(...) \
+  throw ::gloo::TimeoutException(GLOO_ERROR_MSG(__VA_ARGS__))
+
 } // namespace gloo
