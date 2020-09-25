@@ -8,6 +8,7 @@
 #include <cctype>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <algorithm>
 #include <functional>
 #include <map>
@@ -391,8 +392,10 @@ namespace http
                 throw RequestError("Only HTTP scheme is supported");
 
             addrinfo hints;// = {};
+            bzero(&hints, sizeof(hints));
             hints.ai_family = getAddressFamily(internetProtocol);
             hints.ai_socktype = SOCK_STREAM;
+            hints.ai_protocol = 0;
 
             addrinfo* info;
             if (getaddrinfo(domain.c_str(), port.c_str(), &hints, &info) != 0)
