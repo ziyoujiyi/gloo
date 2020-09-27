@@ -10,8 +10,9 @@ GlooLogMessage::GlooLogMessage(const char* fname, int line, GlooLogLevel severit
     : fname_(fname), line_(line), severity_(severity) {}
 
 void GlooLogMessage::GenerateLogMessage(bool log_time) {
-  bool use_cout = static_cast<int>(severity_) <= static_cast<int>(GlooLogLevel::INFO);
-  std::ostream& os = use_cout ? std::cout : std::cerr;
+  //bool use_cout = static_cast<int>(severity_) <= static_cast<int>(GlooLogLevel::TRACE);
+  //std::ostream& os = use_cout ? std::cout : std::cerr;
+  std::ostream& os = std::cerr;
   if (log_time) {
     auto now = std::chrono::system_clock::now();
     auto as_time_t = std::chrono::system_clock::to_time_t(now);
