@@ -72,7 +72,10 @@ http::Response
 HTTPStore::PerformHTTP(http::Request& request,
                        const std::string& method = HTTP_GET_METHOD,
                        const std::string& body = "") {
-  for (int retry_cnt = 0; retry_cnt < MAX_RETRY_TIMES; ++retry_cnt) {
+  const auto start = std::chrono::steady_clock::now();
+  const auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
+      std::chrono::steady_clock::now() - start);
+  while (wait_timeout_ != gloo::kNoTimeout && elapsed < wait_timeout_) {
     try {
       http::Response response = request.send(method, body);
       if (response.status != HTTP_OK && response.status != HTTP_NOT_FOUND) {
