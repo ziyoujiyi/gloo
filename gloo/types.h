@@ -87,7 +87,9 @@ struct __attribute__((__aligned__(2))) float16 {
   uint16_t x;
 
   float16() : x(0) {}
-
+  
+  float16(const float16 &) = default;
+  
   explicit float16(int val) {
     float16 res = cpu_float2half_rn(static_cast<float>(val));
     x = res.x;
